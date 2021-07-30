@@ -20,7 +20,7 @@ public class PlayerEngine : MonoBehaviour
         //_speed = 360f / _animationDuration;
     }
 
-    private void FixedUpdate(int a, int b)
+    private void FixedUpdate()
     {
         _rotationAngle += _speed * Time.fixedDeltaTime;
         _rigidBody.centerOfMass = Vector3.zero;
