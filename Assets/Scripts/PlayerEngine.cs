@@ -1,44 +1,37 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(BootsBuilder))]
 public class PlayerEngine : MonoBehaviour
 {
-    [SerializeField] private float _startAngle;
-    [SerializeField] private float _animationDuration;
+    [SerializeField] private Rigidbody _root;
+    [SerializeField] private HingeJoint _rotator;
+    [SerializeField] private DrawingPanel _drawingPanel;
+    [SerializeField] private BootsBuilder _bootsBuilder;
 
-    [SerializeField] private Transform _model;
-    [SerializeField] private Transform _leftFoot;
-    [SerializeField] private Transform _rightFoot;
+    private void OnEnable()
+    {
+        _drawingPanel.Drawn += OnDrawn;
+    }
     
-    [SerializeField]  private float _speed;
-    private float _rotationAngle;
-    private Rigidbody _rigidBody;
-
-    private void Awake()
+    private void OnDisable()
     {
-        _rigidBody = GetComponent<Rigidbody>();
-        //_speed = 360f / _animationDuration;
+        _drawingPanel.Drawn -= OnDrawn;
     }
 
-    private void FixedUpdate()
+    private IEnumerator Start()
     {
-        _rotationAngle += _speed * Time.fixedDeltaTime;
-        _rigidBody.centerOfMass = Vector3.zero;
-        _rigidBody.angularVelocity = new Vector3(_speed, 0, 0);
-
-        _leftFoot.rotation = Quaternion.identity;
-        _rightFoot.rotation = Quaternion.identity;
+        yield return new WaitForSeconds(3);
+        
     }
 
-    private void LateUpdate()
+    private void OnDrawn(List<Vector2> points)
     {
-        _model.rotation = Quaternion.identity;
-        _leftFoot.rotation = Quaternion.identity;
-        _rightFoot.rotation = Quaternion.identity;
-    }
-
-    private float Func(float x)
-    {
-        return Mathf.Sin(x * 2 - Mathf.PI / 2) * 0.5f + 0.5f + 0.1f;
+        _bootsBuilder.Clear();
+        _bootsBuilder.Build(points);
+        _root.isKinematic = false;
+        _rotator.useMotor = true;
     }
 }
