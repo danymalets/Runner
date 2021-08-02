@@ -8,12 +8,14 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(LineDrawer))]
 public class DrawingPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    [SerializeField] private float _minLineLength = 30;
+    [SerializeField] private float _minDistance = 10;
+    [SerializeField] private float _minCompressedDistance = 30;
     
     private LineDrawer _lineDrawer;
     private RectTransform _rectTransform;
     
     private List<Vector2> _points = new List<Vector2>();
+    private List<Vector2> _compressedPoints = new List<Vector2>();
     
     public event Action<List<Vector2>> Drawn;
     
@@ -26,19 +28,23 @@ public class DrawingPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     public void OnBeginDrag(PointerEventData eventData)
     {
         Vector2 point = GetPosition(eventData);
-        _points.Clear();
         _lineDrawer.DrawPoint(point);
         _points.Add(point);
+        _compressedPoints.Add(point);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         Vector2 point = GetPosition(eventData);
-        if (Vector2.Distance(point, _points.Last()) > _minLineLength)
+        if (Vector2.Distance(point, _points.Last()) > _minDistance)
         {
             _lineDrawer.DrawLine(_points.Last(), point);
             _lineDrawer.DrawPoint(point);
             _points.Add(point);
+        }
+        if (Vector2.Distance(point, _compressedPoints.Last()) > _minCompressedDistance)
+        {
+            _compressedPoints.Add(point);
         }
     }
 
@@ -49,11 +55,13 @@ public class DrawingPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         _lineDrawer.DrawPoint(point);
         _points.Add(point);
 
-        Drawn?.Invoke(_points);
+        Drawn?.Invoke(_compressedPoints);
     }
     
     public void Clear()
     {
+        _points.Clear();
+        _compressedPoints.Clear();
         _lineDrawer.Clear();
     }
     

@@ -6,7 +6,6 @@ using UnityEngine;
 public class BootsUpdater : MonoBehaviour
 {
     [SerializeField] private FootEngine _footEngine;
-    
     [SerializeField] private DrawingPanel _drawingPanel;
     [SerializeField] private BootsBuilder _bootsBuilder;
     [SerializeField] private LineConverter _lineConverter;
@@ -30,23 +29,23 @@ public class BootsUpdater : MonoBehaviour
     private void OnDrawn(List<Vector2> points)
     {
         StartCoroutine(UpdateBoots(points));
-        
     }
 
     private IEnumerator UpdateBoots(List<Vector2> points)
     {
-        _bootsBuilder.Clear();
-        _drawingPanel.Clear();
+        List<Vector3> points3d = _lineConverter.ConvertTo3D(points);
 
         _footEngine.TurnOff();
-
-        yield return new WaitForFixedUpdate();
         
-        List<Vector3> points3d = _lineConverter.ConvertTo3D(points);
+        _bootsBuilder.Clear();
+        _drawingPanel.Clear();
+        
+        yield return new WaitForFixedUpdate();
         
         _playerLift.UpdatePosition(points3d);
         
-        yield return null;
+        yield return new WaitForFixedUpdate();
+        yield return new WaitForFixedUpdate(); // yes, yes it is necessary
 
         _bootsBuilder.Build(points3d);
 

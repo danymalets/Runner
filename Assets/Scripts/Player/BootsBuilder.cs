@@ -6,13 +6,14 @@ using UnityEngine;
 
 public class BootsBuilder : MonoBehaviour
 {
+    [SerializeField] private Transform _cubePrefab;
+    [SerializeField] private Transform _cylinderPrefab;
+    
     [SerializeField] private float _width = 0.1f;
     [SerializeField] private float _thickness = 0.1f;
     
     [SerializeField] private Transform _leftBootRoot;
     [SerializeField] private Transform _rightBootRoot;
-    
-    [SerializeField] private Color _bootColor;
     
     private List<GameObject> _stuff = new List<GameObject>();
 
@@ -36,27 +37,21 @@ public class BootsBuilder : MonoBehaviour
     
     private void CreateCube(Vector3 source, Vector3 target, Transform parent)
     {
-        Transform cube = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
-        cube.SetParent(parent);
+        Transform cube = Instantiate(_cubePrefab, parent);
         cube.localPosition = (source + target) / 2;
-        cube.localRotation = Quaternion.LookRotation(target - source, Vector3.up);
+        cube.localRotation = Quaternion.LookRotation(target - source,  Quaternion.Euler(-90, 0, 0) * (target - source));
         cube.localScale = new Vector3(_thickness, _width, Vector3.Distance(source, target));
-
-        cube.GetComponent<Renderer>().material.color = _bootColor;
         
         _stuff.Add(cube.gameObject);
     }
     
     private void CreateCylinder(Vector3 point, Transform parent)
     {
-        Transform cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder).transform;
+        Transform cylinder = Instantiate(_cylinderPrefab, parent);
         cylinder.SetParent(parent);
         cylinder.localPosition = point;
-        cylinder.localRotation = Quaternion.Euler(0, 0, 90);
         cylinder.localScale = new Vector3(_width, _thickness / 2, _width);
         
-        cylinder.GetComponent<Renderer>().material.color = _bootColor;
-
         _stuff.Add(cylinder.gameObject);
     }
 
