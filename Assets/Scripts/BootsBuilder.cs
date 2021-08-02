@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class BootsBuilder : MonoBehaviour
 {
-    [SerializeField] private float _scale = 0.01f;
     [SerializeField] private float _width = 0.1f;
     [SerializeField] private float _thickness = 0.1f;
     
@@ -14,29 +13,21 @@ public class BootsBuilder : MonoBehaviour
     [SerializeField] private Transform _rightBootRoot;
     
     [SerializeField] private Color _bootColor;
-
-    private List<GameObject> _stuff = new List<GameObject>();
     
-    public void Build(List<Vector2> points)
+    private List<GameObject> _stuff = new List<GameObject>();
+
+    public void Build(List<Vector3> points)
     {
-        Vector2 pivot = Vector2.negativeInfinity;
-        foreach (Vector2 point in points)
+        for (int i = 0; i < points.Count - 1; i++)
         {
-            if (point.y > pivot.y)
-                pivot = point;
-        }
-        List<Vector3> points3d = points.Select(p => new Vector3(0, (p.y - pivot.y) * _scale,(p.x - pivot.x) * _scale)).ToList();
-        
-        for (int i = 0; i < points3d.Count - 1; i++)
-        {
-            Vector3 source = points3d[i];
-            Vector3 target = points3d[i + 1];
+            Vector3 source = points[i];
+            Vector3 target = points[i + 1];
             
             CreateCube(source, target, _leftBootRoot);
             CreateCube(source, target, _rightBootRoot);
         }
         
-        foreach (Vector3 point in points3d)
+        foreach (Vector3 point in points)
         {
             CreateCylinder(point, _leftBootRoot);
             CreateCylinder(point, _rightBootRoot);
@@ -48,7 +39,7 @@ public class BootsBuilder : MonoBehaviour
         Transform cube = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
         cube.SetParent(parent);
         cube.localPosition = (source + target) / 2;
-        cube.localRotation = Quaternion.LookRotation(target - source, Vector3.Scale(target - source, new Vector3(1, 1, -1)));
+        cube.localRotation = Quaternion.LookRotation(target - source, Vector3.up);
         cube.localScale = new Vector3(_thickness, _width, Vector3.Distance(source, target));
 
         cube.GetComponent<Renderer>().material.color = _bootColor;

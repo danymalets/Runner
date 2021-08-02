@@ -23,11 +23,9 @@ public class DrawingPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         _rectTransform = GetComponent<RectTransform>();
     }
 
-
     public void OnBeginDrag(PointerEventData eventData)
     {
         Vector2 point = GetPosition(eventData);
-        _lineDrawer.Clear();
         _points.Clear();
         _lineDrawer.DrawPoint(point);
         _points.Add(point);
@@ -53,10 +51,10 @@ public class DrawingPanel : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
         Drawn?.Invoke(_points);
     }
-
-    private void Update()
+    
+    public void Clear()
     {
-        
+        _lineDrawer.Clear();
     }
     
     private Vector2 GetPosition(PointerEventData eventData)
