@@ -45,12 +45,11 @@ public class BootsUpdater : MonoBehaviour
         _playerLift.UpdatePosition(points3d);
         
         yield return new WaitForFixedUpdate();
-        yield return new WaitForFixedUpdate(); // yes, it is necessary
+        yield return new WaitForFixedUpdate(); 
 
         _bootsBuilder.Build(points3d);
 
         _footEngine.TurnOn();
-
     }
 }
 
